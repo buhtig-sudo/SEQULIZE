@@ -4,40 +4,43 @@ const express = require("express");
 const app = express();
 
 const sequelize = new Sequelize(process.env.DATABASE_URL);
-class Note extends Model {}
-Note.init(
+class Work extends Model {}
+Work.init(
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    content: {
+    author: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
-    important: {
-      type: DataTypes.BOOLEAN,
+    url: {
+      type: DataTypes.TEXT,
     },
-    date: {
-      type: DataTypes.DATE,
+    title: {
+      type: DataTypes.TEXT,
+    },
+    likes: {
+      type: DataTypes.INTEGER,
     },
   },
   {
     sequelize,
-    underscored: true,
+    // underscored: false,
     timestamps: false,
-    modelName: "note",
+    modelName: "work",
   }
 );
 
 app.get("/api/notes", async (req, res) => {
-  const notes = await Note.findAll();
-  res.json(notes);
+  const work = await Work.findAll();
+  res.json(work);
 });
 app.post("/api/notes", async (req, res) => {
   try {
-    const note = await Note.create(req.body);
+    const note = await Work.create(req.body);
     return res.json(note);
   } catch (error) {
     return res.status(400).json({ error });

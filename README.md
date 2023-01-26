@@ -1,10 +1,4 @@
-# Node.js template
-
-This is a Node.js project.
-
-Add your [configuration](https://codesandbox.io/docs/projects/learn/setting-up/tasks) to optimize it for [CodeSandbox](https://codesandbox.io/p/dashboard).
-
-## Resources
-
-- [CodeSandbox Projects — Docs](https://codesandbox.io/docs/projects)
-- [CodeSandbox — Discord](https://discord.gg/Ggarp3pX5H)# Node.js template
+curl -L https://fly.io/install.sh | sh
+export FLYCTL_INSTALL="/project/home/buhtig-sudo/.fly"
+export PATH="$FLYCTL_INSTALL/bin:$PATH"
+fly auth login
