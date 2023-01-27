@@ -56,6 +56,16 @@ app.post("/api/works", async (req, res) => {
 app.get("/api/works/:id", async (req, res) => {
   const work = await Work.findByPk(req.params.id);
   if (work) {
+    console.log(JSON.stringify(work, null, 2));
+    res.json(work);
+  } else {
+    res.status(404).end();
+  }
+});
+app.delete("/api/works/:id", async (req, res) => {
+  const work = await Work.findByPk(req.params.id);
+  if (work) {
+    await work.destroy();
     res.json(work);
   } else {
     res.status(404).end();
