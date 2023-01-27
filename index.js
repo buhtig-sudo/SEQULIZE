@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 
 const sequelize = new Sequelize(process.env.DATABASE_URL);
+
 class Work extends Model {}
 Work.init(
   {
@@ -28,24 +29,39 @@ Work.init(
   },
   {
     sequelize,
-    // underscored: false,
+    underscored: true,
     timestamps: false,
     modelName: "work",
   }
 );
 
-app.get("/api/notes", async (req, res) => {
-  const work = await Work.findAll();
-  res.json(work);
+Work.sync();
+
+app.get("/api/works", async (req, res) => {
+  const works = await Work.findAll();
+  res.json(works);
 });
-app.post("/api/notes", async (req, res) => {
+
+app.use(express.json());
+
+app.post("/api/works", async (req, res) => {
   try {
-    const note = await Work.create(req.body);
-    return res.json(note);
+    const work = await Work.create(req.body);
+    return res.json(work);
   } catch (error) {
     return res.status(400).json({ error });
   }
 });
+
+app.get("/api/works/:id", async (req, res) => {
+  const work = await Work.findByPk(req.params.id);
+  if (work) {
+    res.json(work);
+  } else {
+    res.status(404).end();
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
