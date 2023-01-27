@@ -59,14 +59,24 @@ app.get("/api/works/:id", async (req, res) => {
     console.log(JSON.stringify(work, null, 2));
     res.json(work);
   } else {
+    res.status(404).then(res.send("Not Found id!"));
+  }
+});
+app.put("/api/works/:id", async (req, res) => {
+  const work = await Work.findByPk(req.params.id);
+  if (work) {
+    work.author = req.body.author;
+    work.title = req.body.title;
+    await work.save();
+    res.json(work);
+  } else {
     res.status(404).end();
   }
 });
 app.delete("/api/works/:id", async (req, res) => {
   const work = await Work.findByPk(req.params.id);
   if (work) {
-    await work.destroy();
-    res.json(work);
+    await work.destroy().then(res.send("Element delete success!!"));
   } else {
     res.status(404).end();
   }
