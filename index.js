@@ -39,6 +39,7 @@ Work.sync();
 
 app.get("/api/works", async (req, res) => {
   const works = await Work.findAll();
+  console.log(JSON.stringify(works, null, 2));
   res.json(works);
 });
 
