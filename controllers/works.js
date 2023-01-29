@@ -1,22 +1,45 @@
 const router = require("express").Router();
+const jwt = require("jsonwebtoken");
+const { Work, User } = require("../models");
+const tokenExtractor = (req, res, next) => {
+  const authorization = req.get("authorization");
+  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
+    try {
+      console.log(authorization.substring(7));
+      console.log(SECRET);
+      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+    } catch (error) {
+      console.log(error);
+      return res.status(401).json({ error: "token invalid" });
+    }
+  } else {
+    return res.status(401).json({ error: "token missing" });
+  }
 
-const { Work } = require("../models");
-
-router.get("/", async (req, res, next) => {
-  Work.findAll()
-    .then((work) => {
-      console.log(JSON.stringify(work, null, 2));
-      res.json(work);
-    })
-    .catch((error) => next(error));
+  next();
+};
+router.get("/", async (req, res) => {
+  const works = await Work.findAll({
+    attributes: { exclude: ["userId"] },
+    include: {
+      model: User,
+      attributes: ["name"],
+    },
+  });
+  res.json(works);
 });
-
-router.post("/", async (req, res, next) => {
-  Work.create(req.body)
-    .then((work) => {
-      return res.json(work);
-    })
-    .catch((error) => next(error));
+router.post("/", tokenExtractor, async (req, res) => {
+  try {
+    const user = await User.findByPk(req.decodedToken.id);
+    const work = await Work.create({
+      ...req.body,
+      userId: user.id,
+      date: new Date(),
+    });
+    res.json(work);
+  } catch (error) {
+    return res.status(400).json({ error });
+  }
 });
 const workFinder = async (req, res, next) => {
   req.work = await Work.findByPk(req.params.id);
